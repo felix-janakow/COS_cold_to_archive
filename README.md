@@ -17,4 +17,12 @@ Bei Ausführung des Skripts wird nach folgenden Eingabedaten gefragt:
     - ACCOUNT_ID
     - REGION
 
+Diese werden in einer .env Datei gespeichert und lokal "neben" das Skript abgelegt
 
+### Finden der geforderten Eingabedaten
+
+Da es nicht unbedingt direkt klar ist, wo die Daten aufzufinden sind, wird im folgenden Beschrieben wie man an die einzelnen Variablen ran kommt: 
+
+### SOURCE_BUCKET und DESTINATION_BUCKET
+
+-> Die beiden Eingaben werden zusammen betrachtet, da es sich bei uns um einen "INPLACE COPY" handelt. Quelle und Ziel sind also derselbe Bucket. 
