@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def copy_objects(source_bucket, destination_bucket, max_keys=2):
+def copy_objects(source_bucket, destination_bucket, max_keys=100000000):
     # Set up IBM Cloud Object Storage resource provider
     authenticator = IAMAuthenticator(os.environ['IAM_API_KEY'])
     s3 = client(
