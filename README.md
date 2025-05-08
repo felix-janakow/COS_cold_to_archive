@@ -4,6 +4,7 @@ Dieses Skript dient dazu, Daten aus einem COS-Bucket im Cold Vault-Tier in das A
 
 > [!NOTE] 
 > Die REPLACE-Operation betrifft ausschließlich die Metadaten – der Inhalt der Datei selbst bleibt unverändert.
+>
 > Je nach gewähltem Archivtyp kann die Wiederherstellung archivierter Daten bis zu 2 Stunden (bei Instant Retrieval) oder bis zu 12 Stunden (bei Cold Archive) dauern.       
 
 ## Vorbereitung
