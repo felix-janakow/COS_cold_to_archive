@@ -26,3 +26,5 @@ Da es nicht unbedingt direkt klar ist, wo die Daten aufzufinden sind, wird im fo
 ### SOURCE_BUCKET und DESTINATION_BUCKET
 
 -> Die beiden Eingaben werden zusammen betrachtet, da es sich bei uns um einen "INPLACE COPY" handelt. Quelle und Ziel sind also derselbe Bucket. 
+
+![Image](https://github.com/user-attachments/assets/08db8f19-edbe-4cec-98a7-ae8a93676fb1)
