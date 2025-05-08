@@ -24,7 +24,7 @@ Diese werden in einer .env Datei gespeichert und lokal "neben" das Skript abgele
 Da es nicht unbedingt direkt klar ist, wo die Daten aufzufinden sind, wird im folgenden beschrieben wie man an die einzelnen Variablen ran kommt: 
 
 
-### SOURCE_BUCKET und DESTINATION_BUCKET
+### - SOURCE_BUCKET und - DESTINATION_BUCKET
 
 -> Die beiden Eingaben werden zusammen betrachtet, da es sich bei uns um einen "INPLACE COPY" handelt. Quelle und Ziel sind also derselbe Bucket. 
 
@@ -32,12 +32,12 @@ Da es nicht unbedingt direkt klar ist, wo die Daten aufzufinden sind, wird im fo
 
 ![Image](https://github.com/user-attachments/assets/67925d35-80cf-4681-8993-859d11f41618)
 
-- Kopieren Sie den Namen des Buckets und bewahren Sie diesen in irgendeiner Form abrufbar als Notiz auf 
+- Kopieren Sie den Namen des Buckets und bewahren Sie diesen in irgendeiner Form abrufbar als Notiz ab 
 
 ![Image](https://github.com/user-attachments/assets/3f4af865-8bfe-4034-8412-e90b5e805e1e)
 
 
-### IAM_API_KEY
+### - IAM_API_KEY
 
 Erstellen Sie einen IAM Schlüssel indem Sie:
 -  Über die obere Navigationsleiste auf ``Manage`` klicken und ``Access(IAM)`` auswählen
@@ -46,5 +46,18 @@ Erstellen Sie einen IAM Schlüssel indem Sie:
 -  Vergeben Sie irgendeinen Namen
 - Leaked Action können Sie ignorieren
 - Für Session Creation wählen Sie ``Yes``
+- Speichern Sie sich den Key in irgendeiner Form abrufbar als Notiz ab
 
 ![Image](https://github.com/user-attachments/assets/f15b760d-fc69-46b8-80ab-9d486eddb301)
+
+### - ACCOUNT_ID
+
+Die Account ID finden Sie so: 
+-  Gehen Sie über die obere Navigationsleiste auf ``Manage`` und klicken Sie auf ``Account``
+-  Wählen Sie ``Account settings`` auf der linken Seiteleiste
+-  Die Account ID ist oben unter **Account** zu finden
+- Kopieren Sie sich die ID und speichern Sie diese in irgendeiner Form abrufbar als Notiz ab
+
+![Image](https://github.com/user-attachments/assets/1b97b1d4-259f-43b8-8669-ad3cd4ff6201)
+
+### - Region
