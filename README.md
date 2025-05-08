@@ -30,12 +30,21 @@ Da es nicht unbedingt direkt klar ist, wo die Daten aufzufinden sind, wird im fo
 
 - Klicken Sie auf ``Ressourcenliste``am linken Rand und suchen Sie nach Ihrer COS Instanz, welche die Buckets enthält, die Sie archivieren möchten   
 
-![Image](https://github.com/user-attachments/assets/505eabb7-ba2e-4731-b5cc-34f874b59d66) 
+![Image](https://github.com/user-attachments/assets/67925d35-80cf-4681-8993-859d11f41618)
 
 - Kopieren Sie den Namen des Buckets und bewahren Sie diesen in irgendeiner Form abrufbar als Notiz auf 
 
-![Image](https://github.com/user-attachments/assets/3279b096-4fe3-43ad-aaa9-2d2b6d5bdda6)
+![Image](https://github.com/user-attachments/assets/3f4af865-8bfe-4034-8412-e90b5e805e1e)
 
 
 ### IAM_API_KEY
 
+Erstellen Sie einen IAM Schlüssel indem Sie:
+-  Über die obere Navigationsleiste auf ``Manage`` klicken und ``Access(IAM)`` auswählen
+-  ``API-keys`` auf der linken Seiteleiste auswählen
+-  ``Create +`` klicken  
+-  Vergeben Sie irgendeinen Namen
+- Leaked Action können Sie ignorieren
+- Für Session Creation wählen Sie ``Yes``
+
+![Image](https://github.com/user-attachments/assets/f15b760d-fc69-46b8-80ab-9d486eddb301)
