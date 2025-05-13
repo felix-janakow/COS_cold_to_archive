@@ -1,0 +1,7 @@
+**/*.env
+**/copied_keys.txt
+**/failed_keys.txt
+**/cos_batch_copy.log
+test.txt
+
+
