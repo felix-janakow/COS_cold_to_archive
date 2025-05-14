@@ -1,4 +1,0 @@
-ibm-cos-sdk
-ibm-cloud-sdk-core
-python-dotenv
-tqdm
