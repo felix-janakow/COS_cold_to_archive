@@ -7,7 +7,7 @@ This script is used to move data from a COS bucket in the Cold Vault tier to the
 >  
 > Depending on the selected archive type, restoring archived data may take up to 2 hours (Accelerated) or up to 12 hours (with Cold Archive).       
 
-## Preparation
+## Preparation - Variables
 
 When the script is executed, you will be prompted to provide the following input data: 
 
@@ -51,3 +51,7 @@ Create an IAM key by:
 ### - Region
 
 In our case, the region value is ``eu-de``
+
+## Preparation - Setting up the environment to execute the script
+
+### 
