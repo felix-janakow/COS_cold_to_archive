@@ -1,55 +1,53 @@
-# Tutorial - Python Skript Cold Vault -> Archive Tier
+# Tutorial - Python Script Cold Vault -> Archive Tier
 
-Dieses Skript dient dazu, Daten aus einem COS-Bucket im Cold Vault-Tier in das Archiv-Tier zu verschieben. Dies geschieht durch eine REPLACE-Operation auf die Metadaten der Objekte im Bucket. Diese Operation löst eine Änderung aus, die von COS erkannt wird und den Archivierungsprozess startet.
+This script is used to move data from a COS bucket in the Cold Vault tier to the Archive tier. This is done via a REPLACE operation on the metadata of the objects in the bucket. This operation triggers a change that is recognized by COS and starts the archiving process.
 
-> [!NOTE] 
-> Die REPLACE-Operation betrifft ausschließlich die Metadaten – der Inhalt der Datei selbst bleibt unverändert.
->
-> Je nach gewähltem Archivtyp kann die Wiederherstellung archivierter Daten bis zu 2 Stunden (bei Instant Retrieval) oder bis zu 12 Stunden (bei Cold Archive) dauern.       
+> [!NOTE]  
+> The REPLACE operation affects metadata only – the file content itself remains unchanged.  
+>  
+> Depending on the selected archive type, restoring archived data may take up to 2 hours (Accelerated) or up to 12 hours (with Cold Archive).       
 
-## Vorbereitung
+## Preparation
 
-Bei Ausführung des Skripts wird nach folgenden Eingabedaten gefragt: 
+When the script is executed, you will be prompted to provide the following input data: 
 
-    - SOURCE_BUCKET
-    - DESTINATION_BUCKET
+    - SOURCE_BUCKET + DESTINATION_BUCKET
     - IAM_API_KEY
-    - ACCOUNT_ID
     - REGION
 
-Diese werden in einer .env Datei gespeichert und lokal "neben" das Skript abgelegt
+These values are stored in a `.env` file and placed locally next to the script.
 
-### Finden der geforderten Eingabedaten
+### Finding the required input data
 
-Da es nicht unbedingt direkt klar ist, wo die Daten aufzufinden sind, wird im folgenden beschrieben wie man an die einzelnen Variablen ran kommt: 
+Since it may not be immediately clear where to find the necessary information, the following explains how to retrieve each variable:
 
 
-### - SOURCE_BUCKET und - DESTINATION_BUCKET
+### - SOURCE_BUCKET and - DESTINATION_BUCKET
 
--> Die beiden Eingaben werden zusammen betrachtet, da es sich bei uns um einen "INPLACE COPY" handelt. Quelle und Ziel sind also derselbe Bucket. 
+-> These two entries are considered together since we are performing an "INPLACE COPY". Source and destination are the same bucket.
 
-- Klicken Sie auf ``Ressourcenliste``am linken Rand und suchen Sie nach Ihrer COS Instanz, welche die Buckets enthält, die Sie archivieren möchten   
+- Click on ``Resource List`` on the left-hand side and search for your COS instance containing the buckets you wish to archive.   
 
-![Image](https://github.com/user-attachments/assets/67925d35-80cf-4681-8993-859d11f41618)
+![Image](https://github.com/user-attachments/assets/e9d100d3-4c2b-46c9-b002-f847af128bff)
 
-- Kopieren Sie den Namen des Buckets und bewahren Sie diesen in irgendeiner Form abrufbar als Notiz ab 
+- Copy the name of the bucket and save it in a retrievable format as a note. 
 
-![Image](https://github.com/user-attachments/assets/3f4af865-8bfe-4034-8412-e90b5e805e1e)
+![Image](https://github.com/user-attachments/assets/23996861-7842-4aed-b5f1-704632c81da7)
 
 
 ### - IAM_API_KEY
 
-Erstellen Sie einen IAM Schlüssel indem Sie:
--  Über die obere Navigationsleiste auf ``Manage`` klicken und ``Access(IAM)`` auswählen
--  ``API-keys`` auf der linken Seiteleiste auswählen
--  ``Create +`` klicken  
--  Vergeben Sie irgendeinen Namen
-- Leaked Action können Sie ignorieren
-- Für Session Creation wählen Sie ``Yes``
-- Speichern Sie sich den Key in irgendeiner Form abrufbar als Notiz ab
+Create an IAM key by:
+- Clicking ``Manage`` in the top navigation and selecting ``Access (IAM)``
+- Selecting ``API keys`` in the left sidebar
+- Clicking ``Create +``  
+- Giving it any name you like
+- You can ignore Leaked Action
+- For Session Creation, select ``Yes``
+- Save the key in a retrievable format as a note
 
-![Image](https://github.com/user-attachments/assets/f15b760d-fc69-46b8-80ab-9d486eddb301)
+![Image](https://github.com/user-attachments/assets/19934ff3-fce4-4bc5-9059-e0440abaa38b)
 
 ### - Region
 
-Die Region ist in unserem Falle der Wert ``eu-de``
+In our case, the region value is ``eu-de``
