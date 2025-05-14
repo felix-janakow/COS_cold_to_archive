@@ -57,6 +57,15 @@ In our case, the region value is ``eu-de``
 > [!NOTE]
 > Dieses Besipeil bezieht sich auf ein Linux enviroment, dann gehen sie den Anforderungen für ihr spezifisches OS nach 
 
+
+## Step 1: Download the Script
+
+Use the following `curl` command to download the script from the GitHub repository:
+
+```bash
+curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive.py
+```
+
 ### Installing Python 3 and required packages on Linux
 
 To run the script, you need to have Python 3 installed along with several packages. Follow these steps to set up your environment:
@@ -71,9 +80,16 @@ sudo apt install python3-pip
 ###  Install required packages
 
 Once Python 3 is installed, you need to install the required packages. Run the following commands:
-```
+```bash
 pip3 install ibm_boto3
 pip3 install ibm_botocore
 pip3 install python-dotenv
 pip3 install tqdm
 ```
+
+## Preperation getting the script 
+
+
+
+## Running the script
+
