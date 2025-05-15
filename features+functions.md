@@ -80,6 +80,6 @@ Uses `tqdm` to provide real-time progress updates in the terminal, including tot
 ### Execution Modes
 **Flexible Execution**:
 
- Supports two execution modes:
-  - Normal mode: Processes objects in batches.
-  - Retry mode: Retries copying objects that previously failed.
+Supports two execution modes:
+- Normal mode: Processes objects in batches.
+- Retry mode: Retries copying objects that previously failed.
