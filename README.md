@@ -8,7 +8,7 @@ This script is used to move data from a COS bucket in the Cold Vault tier to the
 > Depending on the selected archive type, restoring archived data may take up to 2 hours (Accelerated) or up to 12 hours (with Cold Archive).
 
 > [!WARNING]
-> Bevor das Skript ausgefürht wird, muss erst die Archivierungsregel festegelegt werden
+> Before the script is executed, the archiving rule must be defined
 
 ## Preparation - Variables
 
