@@ -88,24 +88,23 @@ First create a dedicated folder for the script. Use the following `curl` command
 curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive.py
 ```
 
-## Running the script
+## Running the Script
 
-To run the script, use the command:
+To run the script, use the following command:
 
-```
+```bash
 python3 archive.py
 ```
 
-You will now be prompted to enter the variables that we identified in the step **Preparation - Variables**. Insert the variables from your notes and start the script.
+You will be prompted to enter the variables identified in the **Preparation - Variables** step. Enter the values you noted earlier and start the script.
 
-> ![NOTE]
+> [!NOTE]
 > Refer to [features+functions.md](https://github.com/felix-janakow/COS_cold_to_archive/blob/main/features%2Bfunctions.md) to learn more about this script and its capabilities.
 
-The script should now execute, and a progress bar will display the progress
+The script will execute and display a progress bar
 
-The script should have created this folder structure:
+After execution, the script will have created the following folder structure:
 
- 
 ```
 folder
 ├── copied_keys
@@ -113,11 +112,10 @@ folder
 ├── logs
 ├── .env
 └── archive.py
-
 ```
 - **copied_keys** contains all successfully archived files
 - **failed_keys** contains all unsuccessfully archived files
 
-***The number of lines that can be written into the txt file can be adjusted in the control plane under ``MAX_KEYS_PER_FILE``. The reason for this is that very large files (> 1 million lines) can consume a lot of RAM.***
+***The maximum number of lines per txt file can be adjusted in the control plane using ``MAX_KEYS_PER_FILE``. This is important because very large files (> 1 million lines) can consume a lot of RAM.***
 
-- Logs are written under **logs**
+- Logs are written to the **logs** directory
