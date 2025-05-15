@@ -5,7 +5,10 @@ This script is used to move data from a COS bucket in the Cold Vault tier to the
 > [!NOTE]  
 > The REPLACE operation affects metadata only – the file content itself remains unchanged.  
 >  
-> Depending on the selected archive type, restoring archived data may take up to 2 hours (Accelerated) or up to 12 hours (with Cold Archive).       
+> Depending on the selected archive type, restoring archived data may take up to 2 hours (Accelerated) or up to 12 hours (with Cold Archive).
+
+> [!WARNING]
+> Bevor das Skript ausgefürht wird, muss erst die Archivierungsregel festegelegt werden
 
 ## Preparation - Variables
 
@@ -57,16 +60,7 @@ In our case, the region value is ``eu-de``
 > [!NOTE]
 > Dieses Besipeil bezieht sich auf ein Linux enviroment, dann gehen sie den Anforderungen für ihr spezifisches OS nach 
 
-
-## Step 1: Download the Script
-
-Use the following `curl` command to download the script from the GitHub repository:
-
-```bash
-curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive.py
-```
-
-### Installing Python 3 and required packages on Linux
+### Step 1: Installing Python 3 and required packages on Linux
 
 To run the script, you need to have Python 3 installed along with several packages. Follow these steps to set up your environment:
 
@@ -77,7 +71,7 @@ sudo apt install python3
 sudo apt install python3-pip
 ``` 
 
-###  Install required packages
+### Step 2: Install required packages
 
 Once Python 3 is installed, you need to install the required packages. Run the following commands:
 ```bash
@@ -86,10 +80,44 @@ pip3 install ibm_botocore
 pip3 install python-dotenv
 pip3 install tqdm
 ```
+### Step 3: Download the Script
 
-## Preperation getting the script 
+First create a dedicated folder for the script. Use the following `curl` command to download the script from the GitHub repository:
 
-
+```bash
+curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive.py
+```
 
 ## Running the script
 
+To run the script, use the command:
+
+```
+python3 archive.py
+```
+
+You will now be prompted to enter the variables that we identified in the step **Preparation - Variables**. Insert the variables from your notes and start the script.
+
+> ![NOTE]
+> Refer to [features+functions.md](https://github.com/felix-janakow/COS_cold_to_archive/blob/main/features%2Bfunctions.md) to learn more about this script and its capabilities.
+
+The script should now execute, and a progress bar will display the progress
+
+The script should have created this folder structure:
+
+ 
+```
+folder
+├── copied_keys
+├── failed_keys
+├── logs
+├── .env
+└── archive.py
+
+```
+- **copied_keys** contains all successfully archived files
+- **failed_keys** contains all unsuccessfully archived files
+
+***The number of lines that can be written into the txt file can be adjusted in the control plane under ``MAX_KEYS_PER_FILE``. The reason for this is that very large files (> 1 million lines) can consume a lot of RAM.***
+
+- Logs are written under **logs**
