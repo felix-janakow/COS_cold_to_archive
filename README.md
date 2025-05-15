@@ -58,7 +58,7 @@ In our case, the region value is ``eu-de``
 ## Preparation - Setting up the environment to execute the script
 
 > [!NOTE]
-> Dieses Besipeil bezieht sich auf ein Linux enviroment, dann gehen sie den Anforderungen für ihr spezifisches OS nach 
+> This example refers to a Linux environment; if you are using a different OS, you will need to follow the requirements for your specific OS
 
 ### Step 1: Installing Python 3 and required packages on Linux
 
