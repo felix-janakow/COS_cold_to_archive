@@ -14,7 +14,9 @@ BATCH_SIZE = 100                   # Number of objects per batch
 MAX_RETRIES = 3                    # Max retries for copy operations
 BACKOFF_FACTOR = 2                 # Exponential backoff factor
 THROTTLE_DELAY = 0.1               # Delay (in seconds) between API calls
-USE_EMOJIS = True                  # Emoji output in logs
+USE_EMOJIS = True                  # Emoji output in logs - alternative text if False
+
+# --- Directory and file handling ---
 
 COPIED_KEYS_DIR = "copied_keys"
 FAILED_KEYS_DIR = "failed_keys"
