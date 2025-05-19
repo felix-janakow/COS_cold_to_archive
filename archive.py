@@ -9,8 +9,8 @@ import glob
 
 # --- Control Plane: All configurable parameters in one place ---
 
-MAX_KEYS_PER_FILE = 1000            # Max lines per key file before rotating
-BATCH_SIZE = 200                   # Number of objects per batch
+MAX_KEYS_PER_FILE = 250            # Max lines per key file before rotating
+BATCH_SIZE = 100                   # Number of objects per batch
 MAX_RETRIES = 3                    # Max retries for copy operations
 BACKOFF_FACTOR = 2                 # Exponential backoff factor
 THROTTLE_DELAY = 0.1               # Delay (in seconds) between API calls
