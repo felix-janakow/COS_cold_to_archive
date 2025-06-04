@@ -87,7 +87,7 @@ pip3 install tqdm
 First create a dedicated folder for the script. Use the following `curl` command to download the script from the GitHub repository:
 
 ```bash
-curl -O https://github.com/felix-janakow/COS_cold_to_archive/blob/main/archive.py
+curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive.py
 ```
 
 ## Running the Script
@@ -95,7 +95,7 @@ curl -O https://github.com/felix-janakow/COS_cold_to_archive/blob/main/archive.p
 To run the script, use the following command:
 
 ```bash
-python3 archive_extended.py
+python3 archive.py
 ```
 
 You will be prompted to enter the variables identified in the **Preparation - Variables** step. Enter the values you noted earlier and start the script.
