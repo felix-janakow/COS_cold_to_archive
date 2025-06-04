@@ -14,15 +14,17 @@ This script is used to move data from a COS bucket in the Cold Vault tier to the
 
 When the script is executed, you will be prompted to provide the following input data: 
 
-    - SOURCE_BUCKET + DESTINATION_BUCKET
-    - IAM_API_KEY
-    - REGION
+    - SOURCE_BUCKET + DESTINATION_BUCKET (required)
+    - IAM_API_KEY (required)
+    - REGION (required)
+    - KEYPROTECT_CRN (optional)
+    - PREFIX (optional)
 
 These values are stored in a `.env` file and placed locally next to the script.
 
 ### Finding the required input data
 
-Since it may not be immediately clear where to find the necessary information, the following explains how to retrieve each variable:
+Since it may not be immediately clear where to find the necessary information, the following explains how to retrieve the ***required variables**:
 
 
 ### - SOURCE_BUCKET and - DESTINATION_BUCKET
@@ -85,7 +87,7 @@ pip3 install tqdm
 First create a dedicated folder for the script. Use the following `curl` command to download the script from the GitHub repository:
 
 ```bash
-curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive.py
+curl -O https://github.ibm.com/felix-janakow/COS-archive-script/blob/main/archive_extended.py
 ```
 
 ## Running the Script
@@ -93,7 +95,7 @@ curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main
 To run the script, use the following command:
 
 ```bash
-python3 archive.py
+python3 archive_extended.py
 ```
 
 You will be prompted to enter the variables identified in the **Preparation - Variables** step. Enter the values you noted earlier and start the script.
@@ -111,7 +113,7 @@ folder
 ├── failed_keys
 ├── logs
 ├── .env
-└── archive.py
+└── archive_extended.py
 ```
 - **copied_keys** contains all successfully archived files
 - **failed_keys** contains all unsuccessfully archived files
