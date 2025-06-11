@@ -3,7 +3,7 @@
 First create a dedicated folder for the script. Use the following `curl` command to download the script from the GitHub repository:
 
 ```bash
-curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive_fbf_non_ineteractive.py
+curl -O https://raw.githubusercontent.com/felix-janakow/COS_cold_to_archive/main/archive_fbf_non_interactive.py
 ```
 
 
