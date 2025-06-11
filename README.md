@@ -18,7 +18,7 @@ All methods operate by performing an in-place copy and updating the metadata (su
 - First accesses the bucket and retrieves the names of all folders and subfolders
 - Pastes the names into the program and processes each folder one by one
 - **Use case:** archiving large buckets
-- [How to use]()
+- [How to use](https://github.com/felix-janakow/COS_cold_to_archive/blob/main/Instructions/archive_fbf.py-INSTRUCTION.md)
 
 
 ### Option 3: archive_fbf_non_interactive.py
@@ -26,4 +26,4 @@ All methods operate by performing an in-place copy and updating the metadata (su
 - Works like archive_fbf.py
 - Adds a feature that allows the terminal to be closed to prevent timeout issues
 - Use case: archiving large buckets where the script is intended to run over an extended period (e.g., over the weekend)
-- [How to use]()
+- [How to use](https://github.com/felix-janakow/COS_cold_to_archive/blob/main/Instructions/archive_fbf_non_interactive.py-INSTRUCTION.md)
