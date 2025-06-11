@@ -68,8 +68,7 @@ sudo apt install python3-pip
 
 Once Python 3 is installed, you need to install the required packages. Run the following commands:
 ```bash
-pip3 install ibm_boto3
-pip3 install ibm_botocore
+pip3 install ibm-cos-sdk
 pip3 install python-dotenv
 pip3 install tqdm
 ```
