@@ -28,13 +28,13 @@ REGION=eu-de
 - Start the script without creating an additional .output file (recommended since logging is already implemented within the script)
 
 ```bash
-nohup python3 archive_non_interactive.py > /dev/null 2>&1 &
+nohup python3 archive_fbf_non_ineteractive.py.py > /dev/null 2>&1 &
 ```
 
 - To just start the script non interactive without further considerations just go with (script will create a .output file whit all of the outpur of the terminal):
 
 ```bash
-nohup python3 archive_non_interactive.py
+nohup python3 archive_fbf_non_ineteractive.py
 ```
 
 
