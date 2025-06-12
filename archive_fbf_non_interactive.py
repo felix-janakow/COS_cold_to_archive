@@ -51,7 +51,7 @@ def ensure_env():
         raise FileNotFoundError(f"No .env file found at {ENV_FILE_PATH}. Please provide one before running.")
     load_dotenv(ENV_FILE_PATH)
 
-# --- Globale SQLite-Verbindung ---
+# --- Global SQLite connection ---
 DB_CONN = None
 
 def get_db_conn():
@@ -66,7 +66,7 @@ def close_db_conn():
         DB_CONN.close()
         DB_CONN = None
 
-# --- SQLite Database Functions (angepasst) ---
+# --- SQLite Database Functions (adapted) ---
 
 def init_db():
     """Initializes the SQLite database and creates tables if they do not exist."""
@@ -436,6 +436,6 @@ if __name__ == '__main__':
         logging.warning(f"Total archived files: {total_archived}")
         print(f"Total archived files: {total_archived}")
     finally:
-        # Am Ende alle fehlgeschlagenen Keys erneut versuchen
+        # At the end, try all failed keys again
         retry_failed_keys(source_bucket, destination_bucket)
         close_db_conn()
