@@ -727,8 +727,7 @@ def archive_objects(bucket_name, db_path, batch_size=100, max_workers=5):
         # Drain the queue to log any unprocessed results
         drain_result_queue(result_queue)  # Pass the queue explicitly
         elapsed_time = time.time() - overall_start_time
-        hours_elapsed = elapsed_time / 3600
-        logger.info(f"Process ran for {hours_elapsed:.2f} hours.")
+        logger.info(f"Process ran for {elapsed_time/3600:.2f} hours.")
         logger.info(f"Processed {overall_success + overall_failures} objects (Success: {overall_success}, Failed: {overall_failures})")
     
     except Exception as e:
@@ -736,17 +735,15 @@ def archive_objects(bucket_name, db_path, batch_size=100, max_workers=5):
         # Drain the queue to log any unprocessed results
         drain_result_queue(result_queue)  # Pass the queue explicitly
         elapsed_time = time.time() - overall_start_time
-        hours_elapsed = elapsed_time / 3600
-        logger.info(f"Process ran for {hours_elapsed:.2f} hours before error.")
+        logger.info(f"Process ran for {elapsed_time/3600:.2f} hours before error.")
         logger.info(f"Processed {overall_success + overall_failures} objects (Success: {overall_success}, Failed: {overall_failures})")
         raise
     
     # Final summary
     elapsed_time = time.time() - overall_start_time
-    hours_elapsed = elapsed_time / 3600
     logger.info("=" * 60)
     logger.info(f"Archiving process completed.")
-    logger.info(f"Total runtime: {hours_elapsed:.2f} hours")
+    logger.info(f"Total runtime: {elapsed_time/3600:.2f} hours")
     logger.info(f"Total objects processed: {overall_success + overall_failures}")
     logger.info(f"Total successful: {overall_success}")
     logger.info(f"Total failed: {overall_failures}")
@@ -863,6 +860,251 @@ def drain_result_queue(result_queue_param=None):
             queue_to_drain.task_done()
     except Exception as e:
         logger.error(f"Error draining result queue: {str(e)}")
+
+################### OBJECT LISTING WITH DATE FILTER ###################
+# List objects from COS bucket to SQLite database, filtering by creation date
+def list_cos_objects_to_sqlite_with_date_filter(bucket_name, db_path, cutoff_date="2025-07-13", continuation_token=None):
+    """
+    List objects in COS bucket created before a specific date and store keys in SQLite database.
+    """
+    start_time = time.time()
+    total_objects = 0
+    filtered_objects = 0
+    
+    # Import specific timezone module
+    from datetime import timezone
+    
+    # Convert cutoff_date string to datetime object and make it timezone-aware
+    if isinstance(cutoff_date, str):
+        # First, create a datetime at midnight on the cutoff date
+        year, month, day = map(int, cutoff_date.split('-'))
+        cutoff_date = datetime(year, month, day, 23, 59, 59)
+        # Make it timezone-aware (UTC)
+        cutoff_date = cutoff_date.replace(tzinfo=timezone.utc)
+        logger.info(f"Using cutoff date: {cutoff_date.isoformat()}")
+    
+    logger.info(f"Starting listing objects from bucket: {bucket_name} (created before {cutoff_date.strftime('%Y-%m-%d')})")
+    
+    # Build up the S3 Client using environment variables
+    cos = client(
+        's3',
+        ibm_api_key_id=os.environ.get('IAM_API_KEY'),
+        config=Config(
+            signature_version='oauth',
+            max_pool_connections=100,
+            retries={'max_attempts': 3},
+            connect_timeout=60,
+            read_timeout=60
+        ),
+        endpoint_url=f"https://s3.{os.environ.get('REGION')}.cloud-object-storage.appdomain.cloud"
+    )
+
+    # SQLite DB connection
+    with sqlite3.connect(db_path, timeout=60) as conn:
+        optimize_db_connection(conn)
+        c = conn.cursor()
+        
+        # Create needed tables
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS cos_objects (
+                key TEXT PRIMARY KEY,
+                last_modified TEXT
+            )
+        """)
+        
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS continuation_state (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                continuation_token TEXT,
+                last_updated TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # Create stats table for monitoring progress
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS listing_stats (
+                id INTEGER PRIMARY KEY CHECK (id = 1),
+                total_objects INTEGER DEFAULT 0,
+                filtered_objects INTEGER DEFAULT 0,
+                start_time TEXT,
+                last_update_time TEXT,
+                finished_time TEXT,
+                cutoff_date TEXT
+            )
+        """)
+        
+        # Update or insert stats
+        c.execute("""
+            INSERT OR REPLACE INTO listing_stats 
+            (id, total_objects, filtered_objects, start_time, last_update_time, cutoff_date) 
+            VALUES (1, 0, 0, datetime('now'), datetime('now'), ?)
+        """, (cutoff_date.isoformat(),))
+        conn.commit()
+
+        # Get the saved continuation token if not provided
+        if not continuation_token:
+            c.execute("SELECT continuation_token FROM continuation_state WHERE id = 1")
+            result = c.fetchone()
+            if result and result[0]:
+                continuation_token = result[0]
+                logger.info(f"Resuming listing with saved continuation token")
+                
+                # Get already processed counts
+                c.execute("SELECT total_objects, filtered_objects FROM listing_stats WHERE id = 1")
+                result = c.fetchone()
+                if result:
+                    total_objects = result[0]
+                    filtered_objects = result[1]
+                    logger.info(f"Already processed {total_objects} objects in previous runs (filtered: {filtered_objects})")
+
+        # Create transaction batches to avoid enormous transactions
+        tx_batch_size = 10000
+        objects_in_current_tx = 0
+        objects_processed_since_cursor_reset = 0
+        
+        try:
+            # Initialize response outside the loop
+            more_objects = True
+            
+            while more_objects:
+                # Prepare parameters for listing objects
+                list_objects_params = {
+                    "Bucket": bucket_name,
+                    "MaxKeys": 1000
+                }
+                # Add continuation token if we have one
+                if continuation_token:
+                    list_objects_params["ContinuationToken"] = continuation_token
+                
+                # Get the objects with retry logic
+                def list_objects():
+                    return cos.list_objects_v2(**list_objects_params)
+                    
+                try:
+                    response = retry_with_backoff(list_objects)
+                    
+                    # Process contents
+                    batch_count = 0
+                    filtered_batch_count = 0
+                    
+                    for obj in response.get("Contents", []):
+                        # Get the object's last modified date
+                        obj_last_modified = obj.get("LastModified")
+                        
+                        # Convert to datetime if it's not already
+                        if isinstance(obj_last_modified, str):
+                            obj_last_modified = datetime.fromisoformat(obj_last_modified.replace('Z', '+00:00'))
+                            
+                        # Add all objects to total count for reporting
+                        total_objects += 1
+                        
+                        # Only insert objects created before the cutoff date
+                        if obj_last_modified < cutoff_date:
+                            c.execute(
+                                "INSERT OR REPLACE INTO cos_objects (key, last_modified) VALUES (?, ?)",
+                                (obj["Key"], obj_last_modified.isoformat())
+                            )
+                            filtered_objects += 1
+                            filtered_batch_count += 1
+                            objects_in_current_tx += 1
+                            
+                        batch_count += 1
+                        objects_processed_since_cursor_reset += 1
+                        
+                        # Commit in smaller batches to avoid huge transactions
+                        if objects_in_current_tx >= tx_batch_size:
+                            conn.commit()
+                            # Update stats
+                            c.execute("""
+                                UPDATE listing_stats 
+                                SET total_objects = ?, filtered_objects = ?, last_update_time = datetime('now')
+                                WHERE id = 1
+                            """, (total_objects, filtered_objects))
+                            conn.commit()
+                            objects_in_current_tx = 0
+                    
+                    logger.info(f"Processed batch with {batch_count} objects, kept {filtered_batch_count} within date range.")
+                    logger.info(f"Total processed: {total_objects}, filtered: {filtered_objects}")
+                    
+                    # Save progress after processing each batch
+                    if response.get("NextContinuationToken"):
+                        continuation_token = response["NextContinuationToken"]
+                        c.execute("""
+                            INSERT OR REPLACE INTO continuation_state (id, continuation_token, last_updated) 
+                            VALUES (1, ?, CURRENT_TIMESTAMP)
+                        """, (continuation_token,))
+                        conn.commit()
+                        logger.info(f"Continuation token saved.")
+                    else:
+                        more_objects = False
+                        logger.info("Reached end of bucket listing.")
+                
+                except Exception as e:
+                    # If we fail during a batch, save what we have and re-raise
+                    logger.error(f"Error during object listing: {str(e)}")
+                    if objects_in_current_tx > 0:
+                        conn.commit()
+                        logger.info(f"Saved progress before error, total processed: {total_objects}")
+                    raise
+                    
+                # Reset cursor periodically
+                if objects_processed_since_cursor_reset >= 100000:
+                    # Commit any pending changes first
+                    if objects_in_current_tx > 0:
+                        conn.commit()
+                        objects_in_current_tx = 0
+                    
+                    # Close and recreate cursor
+                    logger.debug("Recycling database cursor after 100,000 objects")
+                    c.close()
+                    c = conn.cursor()
+                    objects_processed_since_cursor_reset = 0
+                    
+        except KeyboardInterrupt:
+            logger.warning("Process interrupted. Progress has been saved.")
+            conn.commit()
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
+            conn.commit()
+            raise
+        finally:
+            # Make sure changes are committed
+            if objects_in_current_tx > 0:
+                conn.commit()
+                
+            # Update final stats
+            c.execute("""
+                UPDATE listing_stats 
+                SET total_objects = ?, filtered_objects = ?, last_update_time = datetime('now')
+                WHERE id = 1
+            """, (total_objects, filtered_objects))
+            conn.commit()
+    
+    # Clear the continuation token when complete if we finished
+    if not more_objects:
+        end_time = time.time()
+        duration = end_time - start_time
+        
+        with sqlite3.connect(db_path) as conn:
+            optimize_db_connection(conn)
+            c = conn.cursor()
+            c.execute("DELETE FROM continuation_state WHERE id = 1")
+            
+            # Update stats with finished time
+            c.execute("""
+                UPDATE listing_stats 
+                SET finished_time = datetime('now')
+                WHERE id = 1
+            """)
+            conn.commit()
+            
+        logger.info(f"Listing completed successfully.")
+        logger.info(f"Total objects processed: {total_objects}")
+        logger.info(f"Objects created before {cutoff_date.strftime('%Y-%m-%d')}: {filtered_objects}")
+        logger.info(f"Execution time: {duration:.2f} seconds")
+        
+        # Create tables for tracking and clean up cos_objects
+        cleanup_after_listing(db_path)
 
 ################### MAIN EXECUTION ###################
 # Entry point and command processing
@@ -995,6 +1237,25 @@ if __name__ == "__main__":
             db_path="cos_status.db",
             batch_size=batch_size,
             max_workers=thread_count
+        )
+    elif len(sys.argv) > 1 and sys.argv[1] == "list-before":
+        cutoff_date = "2025-06-13"  # Default to June 13, 2025
+        
+        # Allow custom date in format YYYY-MM-DD
+        if len(sys.argv) > 2:
+            try:
+                # Just validate the format
+                datetime.strptime(sys.argv[2], "%Y-%m-%d")
+                cutoff_date = sys.argv[2]
+            except ValueError:
+                logger.warning(f"Invalid date format '{sys.argv[2]}'. Using default (2025-06-13).")
+
+        logger.info(f"Starting to list objects created before {cutoff_date} from bucket to database")
+        # Pass the date as a string and let the function handle the parsing
+        list_cos_objects_to_sqlite_with_date_filter(
+            bucket_name=bucket,
+            db_path="cos_status.db",
+            cutoff_date=cutoff_date
         )
     else:
         # Default action is to archive with continuous processing
